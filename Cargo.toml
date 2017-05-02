@@ -1,0 +1,10 @@
+[package]
+name = "tea"
+version = "0.1.0"
+authors = ["Nick Ippoliti <nickippoliti@protonmail.com>"]
+
+[dependencies]
+conrod = {version = "0.51.1", features = ["glium", "winit"]}
+glutin = "0.8.0"
+glium = "0.16.0"
+
