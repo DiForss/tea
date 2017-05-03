@@ -3,6 +3,8 @@ name = "tea"
 version = "0.1.0"
 authors = ["Nick Ippoliti <nickippoliti@protonmail.com>"]
 
+license = "GPL-3.0 / MPL-2.0"
+
 [dependencies]
 conrod = {version = "0.51.1", features = ["glium", "winit"]}
 glutin = "0.8.0"
