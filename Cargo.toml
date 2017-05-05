@@ -1,9 +1,12 @@
 [package]
 name = "tea"
 version = "0.1.0"
-authors = ["Nick Ippoliti <nickippoliti@protonmail.com>"]
+authors = ["zovt <zovt@protonmail.ch>"]
 
 license = "GPL-3.0 / MPL-2.0"
+
+description = "An environment for text-intensive interfaces"
+repository = "https://github.com/zovt/tea"
 
 [dependencies]
 conrod = {version = "0.51.1", features = ["glium", "winit"]}
