@@ -1,0 +1,7 @@
+reorder_imported_names = true
+chain_indent = "Visual"
+fn_brace_style = "SameLineWhere"
+fn_single_line = true
+hard_tabs = true
+use_try_shorthand = true
+wrap_comments = true
