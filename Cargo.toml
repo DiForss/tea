@@ -9,7 +9,7 @@ description = "An environment for text-intensive interfaces"
 repository = "https://github.com/zovt/tea"
 
 [dependencies]
-conrod = {version = "0.51.1", features = ["glium", "winit"]}
-glutin = "0.8.0"
-glium = "0.16.0"
+clippy = {version = "*", optional = true}
 
+[features]
+default = ["clippy"]
