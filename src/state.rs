@@ -1,31 +1,24 @@
 use std::vec::Vec;
+use std::collections::HashMap;
 
-#[derive(Debug)]
-pub struct Buffer {
-	pub name: String,
-	pub file_contents: Vec<u8>,
-}
-
-impl Buffer {
-	pub fn new(name: String) -> Buffer {
-		Buffer {
-			name,
-			file_contents: Vec::new(),
-		}
-	}
-}
+use buffer;
+use buffer::Buffer;
 
 #[derive(Debug)]
 pub struct State {
-	pub buffers: Vec<Buffer>,
+	pub buffers: HashMap<buffer::ID, Buffer>,
+	pub active_buffer: buffer::ID,
+	pub last_id: buffer::ID,
 }
 
 impl State {
 	pub fn initial_state() -> State {
-		let mut default_buffers = Vec::new();
-		default_buffers.push(Buffer::new("*Messages*".to_owned()));
-		default_buffers.push(Buffer::new("*scratch*".to_owned()));
-
-		State { buffers: default_buffers }
+		let state = State {};
+		Buffer::spawn_buffer_into(state,
+		                          "*Messages*",
+		                          buffer::Type::Blessed(buffer::Type::Text));
+		Buffer::spawn_buffer_into(state,
+		                          "*Messages*",
+		                          buffer::Type::Blessed(buffer::Type::Text));
 	}
 }
