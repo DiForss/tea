@@ -3,10 +3,11 @@
 *** TODO Windowing [0/0]
 *** TODO Rendering [0/0]
 * TODO Internal [0/3]
-** TODO Files [/]
+** TODO Files [0/1]
 	 - [ ] Load files into buffers
 ** TODO State [0/0]
-** TODO Event streams [/]
-*** TODO Event streams v1
+** TODO Event streams [0/1]
+*** IN-PROGRESS Event streams v1 [0/1]
+		- State "IN-PROGRESS" from "TODO"       [2017-05-27 Sat 13:59]
 		- [ ] Create a useful interface for providing and listening to events that
       may occur asynchronously
