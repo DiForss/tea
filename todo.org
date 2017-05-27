@@ -1,0 +1,12 @@
+* TODO Visual [0/1]
+** TODO UI [0/2]
+*** TODO Windowing [0/0]
+*** TODO Rendering [0/0]
+* TODO Internal [0/3]
+** TODO Files [/]
+	 - [ ] Load files into buffers
+** TODO State [0/0]
+** TODO Event streams [/]
+*** TODO Event streams v1
+		- [ ] Create a useful interface for providing and listening to events that
+      may occur asynchronously
