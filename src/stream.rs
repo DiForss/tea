@@ -1,64 +1,110 @@
-pub trait Observer {
-	type Value;
-	type Error;
+use std::marker::PhantomData;
+use std::iter::Iterator;
 
-	fn on_event(self, event: Result<Option<Self::Value>, Self::Error>) -> Self where Self: Sized;
+#[derive(Copy, Clone)]
+pub enum Void {}
+
+#[derive(Copy, Clone)]
+pub enum Event<T, E> {
+	Done,
+	None,
+	Val(T),
+	Err(E),
 }
 
-pub trait Observable {
-	type Value;
-	type Error;
+pub trait Stream {
+	type Out;
+	type Err;
 
-	fn add_observer<L>(self, observer: L) -> Self
-		where L: Observer<Value = Self::Value, Error = Self::Error>,
-		      Self: Sized;
-	fn poll(&self) -> Result<Option<Self::Value>, Self::Error>;
+	fn poll(&mut self) -> Event<Self::Out, Self::Err>;
 
-	// 	fn copy(&self) -> Self;
-	fn map<F, U>(self, mapper: F) -> Map<Self, F, Self::Value, U, Self::Error>
-		where Self: Sized,
-		      F: FnMut(Self::Value) -> U
+	fn pipe<C: Consumer<In = Self::Out, Err = Self::Err>>(self, c: C) -> Pipe<Self, C>
+		where Self: Sized
 	{
-		return;
+		Pipe(self, c)
 	}
 
-	// 	fn map_err<F, R>(self, mapper: F) -> MapErr;
-}
-
-pub struct MapErr {}
-
-pub struct Map<O, F, V, U, E>
-	where F: FnMut(V) -> U,
-	      O: Observable<Value = V, Error = E>
-{
-	observers: Vec<Observer<Value = U, Error = E>>,
-	inner_stream: O,
-	mapper: F,
-}
-
-impl<O, F, V, U, E> Observable for Map<O, F, V, U, E>
-	where F: FnMut(V) -> U,
-	      O: Observable<Value = V, Error = E>
-{
-	type Value = U;
-	type Error = E;
-
-	fn add_observer<L>(self, observer: L) -> Self
-		where L: Observer<Value = Self::Value, Error = Self::Error>
+	fn pipe_fn<T, F: Fn(T)>(self, f: F) -> Pipe<Self, FnConsumer<T, F>>
+		where Self: Stream<Out = T, Err = Void> + Sized
 	{
-		self.inner_stream.add_observer(observer);
-		self
+		Pipe(self, FnConsumer::new(f))
 	}
 
-	fn poll(&self) -> Result<Option<U>, Self::Error> {
-		let result = self.inner_stream.poll();
-		match result {
-			Ok(o) => {
-				match o {
-					Some(v) => Result::Ok(Some((self.mapper)(v))),
-					None => Result::Ok(None),
-				}
+	fn flush(&mut self) {
+		loop {
+			match self.poll() {
+				Event::None | Event::Err(_) | Event::Val(_) => (),
+				Event::Done => break,
 			}
 		}
 	}
+
+	fn by_ref(&mut self) -> &mut Self { self }
+}
+
+impl<A, I> Stream for I
+    where I: Iterator<Item = A>
+{
+	type Out = A;
+	type Err = Void;
+
+	fn poll(&mut self) -> Event<Self::Out, Self::Err> {
+		match self.next() {
+			Some(v) => Event::Val(v),
+			None => Event::Done,
+		}
+	}
+}
+
+pub trait Consumer {
+	type In;
+	type Err;
+
+	fn consume(&mut self, Event<Self::In, Self::Err>);
+}
+
+pub struct FnConsumer<T, F: Fn(T)>(PhantomData<T>, F);
+
+impl<T, F: Fn(T)> FnConsumer<T, F> {
+	pub fn new(f: F) -> Self { FnConsumer(PhantomData::default(), f) }
+}
+
+impl<T, F: Fn(T)> Consumer for FnConsumer<T, F> {
+	type In = T;
+	type Err = Void;
+
+	fn consume(&mut self, e: Event<Self::In, Self::Err>) {
+		if let Event::Val(v) = e {
+			(self.1)(v)
+		}
+	}
+}
+
+pub struct Pipe<S, C>(S, C);
+
+impl<S, C> Stream for Pipe<S, C>
+	where S: Stream<Out = C::In, Err = C::Err>,
+	      C: Consumer,
+	      C::In: Copy,
+	      C::Err: Copy
+{
+	type Out = S::Out;
+	type Err = S::Err;
+
+	fn poll(&mut self) -> Event<Self::Out, Self::Err> {
+		let ev = self.0.poll();
+		self.1.consume(ev);
+
+		ev
+	}
+}
+
+impl<S, C> Consumer for Pipe<S, C>
+	where S: Stream<Out = C::In, Err = C::Err>,
+	      C: Consumer
+{
+	type In = C::In;
+	type Err = C::Err;
+
+	fn consume(&mut self, e: Event<Self::In, Self::Err>) { self.1.consume(e); }
 }

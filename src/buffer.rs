@@ -1,8 +1,9 @@
 use state;
 use state::State;
 
+#[derive(Debug)]
 pub enum Type {
-	Blessed(Type),
+	Blessed(Box<Type>),
 	Text,
 }
 
@@ -17,7 +18,7 @@ pub struct Buffer {
 }
 
 impl Buffer {
-	pub fn spawn_buffer_into(&mut state: State, name: String, buffer_type: Type) -> Buffer {
+	pub fn spawn_buffer_into(mut state: &State, name: String, buffer_type: Type) -> Buffer {
 		let id = state.last_id + 1;
 
 		let buffer = Buffer {

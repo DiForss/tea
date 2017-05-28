@@ -1,4 +1,5 @@
-use state::{Buffer, State};
+use state::State;
+use buffer::Buffer;
 use std::path::PathBuf;
 use std::option::Option::*;
 

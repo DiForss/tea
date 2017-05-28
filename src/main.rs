@@ -4,29 +4,23 @@
 
 #![cfg_attr(feature="clippy", plugin(clippy))]
 
-mod buffer;
-mod state;
-mod fs;
 mod stream;
 
-use state::State;
+use stream::*;
 
 fn run() {
-	let state = State::initial_state();
-	let mut keep_going = true;
-
-	while keep_going {
-		// poll events
-		println!("Polling events");
-
-		// check buffers for updates
-		println!("Checking buffers for updates");
-
-		// update the state
-		println!("Updating state");
-
-		keep_going = false;
+	// testing
+	let v = vec![10, 10, 10];
+	let mut it = v.into_iter();
+	{
+		let i_ref = Iterator::by_ref(&mut it);
+		i_ref.take(1)
+		     .pipe_fn(|i| { (0..i / 10).pipe_fn(|i| println!("{}", i)).flush(); })
+		     .pipe_fn(|i| println!("{}", i * 2))
+		     .flush();
 	}
+
+	it.pipe_fn(|_| println!("hello")).flush();
 }
 
 fn main() { run() }
