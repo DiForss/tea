@@ -1,15 +1,6 @@
-[package]
-name = "tea"
-version = "0.1.0"
-authors = ["zovt <zovt@posteo.de"]
-
-license = "GPL-3.0"
-
-description = "An environment for text-intensive interfaces"
-repository = "https://github.com/zovt/tea"
-
-[dependencies]
-clippy = {git = "https://github.com/Manishearth/rust-clippy", optional = true}
-
-[features]
-default = ["clippy"]
+[workspace]
+members = [
+  "src/lib/tea_functional/",
+	"src/lib/tea_core/",
+	"src/bin/",
+]
