@@ -1,6 +1,8 @@
 #[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-    }
-}
+mod tests;
+
+pub mod stream;
+pub mod void;
+pub mod identity;
+pub mod either;
+pub mod state;
