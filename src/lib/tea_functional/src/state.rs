@@ -31,7 +31,7 @@ pub trait State<S> {
 	}
 }
 
-pub struct StateFn<F>(pub F);
+pub struct StateFn<F>(F);
 
 impl<S, V, F> State<S> for StateFn<F>
     where F: FnOnce(S) -> (V, S)
