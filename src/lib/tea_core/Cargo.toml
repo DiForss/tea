@@ -8,3 +8,9 @@ license = "MPL-2.0"
 description = "Core functionality for tea"
 
 [dependencies]
+clap = "2.24.2"
+tea_functional = {path = "../tea_functional"}
+clippy = {git = "https://github.com/Manishearth/rust-clippy", optional = true}
+
+[features]
+default = []

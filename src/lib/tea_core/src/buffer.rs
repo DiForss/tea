@@ -1,36 +1,18 @@
-use state;
-use state::State;
+use fs;
 
-#[derive(Debug)]
-pub enum Type {
-	Blessed(Box<Type>),
-	Text,
-}
+use std::path::Path;
+use std::path::PathBuf;
+use std::io::Error as IOError;
 
-pub type ID = u32;
-
-#[derive(Debug)]
+#[derive(Default)]
 pub struct Buffer {
 	pub name: String,
-	pub file_contents: Vec<u8>,
-	pub id: ID,
-	pub buffer_type: Type,
+	pub path: PathBuf,
+	pub data: Vec<u8>,
 }
 
 impl Buffer {
-	pub fn spawn_buffer_into(mut state: &State, name: String, buffer_type: Type) -> Buffer {
-		let id = state.last_id + 1;
+	pub fn new_from_path(path: &Path) -> Result<Buffer, IOError> { fs::load_file(path) }
 
-		let buffer = Buffer {
-			name,
-			file_contents: Vec::new(),
-			id,
-			buffer_type,
-		};
-
-		state.last_id = id;
-		state.buffers.insert(id, buffer);
-
-		buffer
-	}
+	pub fn save(&self) -> Result<(), IOError> { fs::write_file(&self.path, &self.data) }
 }
