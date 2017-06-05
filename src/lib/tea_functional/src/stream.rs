@@ -45,6 +45,12 @@ pub trait Stream {
 		Grab(self)
 	}
 
+	fn grab_value(self) -> GrabValue<Self>
+		where Self: Sized
+	{
+		GrabValue(self)
+	}
+
 	fn map<U, F>(self, f: F) -> Map<Self, U, F>
 		where Self: Sized,
 		      F: Fn(Self::Value) -> U
@@ -293,6 +299,22 @@ impl<S> Stream for Grab<S>
 	}
 }
 
+// GrabValue is like Grab, but doesn't return the stream
+#[derive(Copy, Clone)]
+pub struct GrabValue<S>(S);
+impl<S> Stream for GrabValue<S>
+    where S: Stream
+{
+	type Value = Void;
+	type Final = Option<(S::Value)>;
+
+	fn poll(&mut self) -> Poll<Self::Value, Self::Final> {
+		match self.0.poll() {
+			Poll::Some(v) => Poll::Done(Some(v)),
+			Poll::Done(_) => Poll::Done(None),
+		}
+	}
+}
 
 // Map maps all values produced by a stream to a different type
 #[derive(Copy, Clone)]

@@ -30,14 +30,14 @@ fn area51() {
 		acc + s.len()
 	}));
 
-	let (v, _) = stash(iter_stream([1, 2, 3].iter())
-	                       .take_values(1)
-	                       .fold(0, Add::add))
-		.grab()
-		.flush()
-		.run()
-		.unwrap();
-	assert_eq!(v, 1);
+	assert_eq!(1,
+	           stash(iter_stream([1, 2, 3].iter())
+	                     .take_values(1)
+	                     .fold(0, Add::add))
+	               .grab_value()
+	               .flush()
+	               .run()
+	               .unwrap())
 }
 
 #[test]
