@@ -3,7 +3,7 @@ use std::ops::Add;
 
 #[test]
 fn test_stash_grab() {
-	let (v, _) = stash(1).grab().flush().run().unwrap();
+	let (v, _) = stash(1).grab().flush_run().unwrap();
 	assert_eq!(1, v);
 
 	let (v, _) = stash(2)
@@ -12,8 +12,7 @@ fn test_stash_grab() {
 		               Some((i, v)) => Some((i * 2, v)),
 		               None => None,
 		           })
-		.flush()
-		.run()
+		.flush_run()
 		.unwrap();
 	assert_eq!(4, v);
 
@@ -35,8 +34,7 @@ fn area51() {
 	                     .take_values(1)
 	                     .fold(0, Add::add))
 	               .grab_value()
-	               .flush()
-	               .run()
+	               .flush_run()
 	               .unwrap())
 }
 

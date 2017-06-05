@@ -99,6 +99,12 @@ pub trait Stream {
 
 		unreachable!()
 	}
+
+	fn flush_run(self) -> Self::Final
+		where Self: Sized
+	{
+		self.flush().run()
+	}
 }
 
 // A generator never produces a Final
