@@ -4,3 +4,4 @@ mod tests;
 pub mod stream;
 pub mod either;
 pub mod void;
+pub mod pipe;

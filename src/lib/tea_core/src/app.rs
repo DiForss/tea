@@ -1,9 +1,10 @@
 use std::fmt::Debug;
 
 use clap::{App, Arg};
-use tea_functional::stream::Stream;
+use tea_functional::pipe::Pipe;
 
-use interaction::ed::{Ed, ed_handler};
+use interaction::cli::{CliHandler, CliIn};
+use interaction::event_handler::EventHandler;
 
 #[derive(Debug)]
 pub enum Error {
@@ -22,18 +23,18 @@ pub fn main() -> Result<(), Error> {
 		         .multiple(true))
 		.arg(Arg::with_name("interaction_mode")
 		         .short("i")
-		         .possible_values(&["ed"])
-		         .default_value("ed"))
+		         .possible_values(&["cli"])
+		         .default_value("cli"))
 		.get_matches();
 
 	let im_opt = matches.value_of("interaction_mode").unwrap();
-	let (p, h) = match im_opt {
-		"ed" => Ok((Ed, ed_handler)),
+	let (i, h) = match im_opt {
+		"cli" => Ok((CliIn, CliHandler)),
 		_ => Err(Error::InvalidOption(im_opt.to_owned())),
 	}?;
 
-	match p.then(h).flush().run() {
-		Ok(v) => Ok(v),
+	match ().run(i.handle_with(h).handle_with(EventHandler)) {
+		Ok(_) => Ok(()),
 		Err(e) => Err(Error::EditorError(Box::new(e))),
 	}
 }
