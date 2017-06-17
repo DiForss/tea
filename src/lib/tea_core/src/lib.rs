@@ -1,5 +1,5 @@
 extern crate clap;
-extern crate tea_functional;
+extern crate tea_structures;
 
 pub mod fs;
 pub mod buffer;

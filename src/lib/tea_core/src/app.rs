@@ -29,7 +29,7 @@ pub fn main() -> Result<(), Error> {
 
 	let im_opt = matches.value_of("interaction_mode").unwrap();
 	let (i, h) = match im_opt {
-		"cli" => Ok((CliIn, CliHandler)),
+		"cli" => Ok((CliIn, CliHandler::new())),
 		_ => Err(Error::InvalidOption(im_opt.to_owned())),
 	}?;
 
