@@ -1,6 +1,0 @@
-[workspace]
-members = [
-  "src/lib/tea_structures/",
-	"src/lib/tea_core/",
-	"src/bin/",
-]
