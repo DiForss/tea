@@ -6,6 +6,18 @@ use gfx::Device;
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
 
+gfx_defines!{
+	vertex Vertex {
+		pos: [f32; 4] = "a_Pos",
+		color: [f32; 3] = "a_Color",
+	}
+
+	pipeline Pipe {
+		vbuf: gfx::VertexBuffer<Vertex> = (),
+		out: gfx::RenderTarget<ColorFormat> = "Target",
+	}
+}
+
 pub fn main() {
 	let builder = glutin::WindowBuilder::new()
 		.with_title("Tea".to_string())
@@ -16,6 +28,12 @@ pub fn main() {
 
 	let (window, mut device, mut factory, main_color, mut main_depth) =
 		gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, &ev_loop);
+
+	let pso = factory.create_pipeline_simple(
+		include_bytes!("TODO"),
+		include_bytes!("TODO"),
+		Pipe::new()
+	).unwrap();
 
 	ev_loop.run_forever(|ev| {
 		match ev {
