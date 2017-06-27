@@ -6,6 +6,12 @@ authors = ["zovt <zovt@posteo.de>"]
 [dependencies]
 freetype = "0.2.0"
 harfbuzz-sys = "0.1.11"
+
+gfx = "0.16.0"
+gfx_window_glutin = "0.16.0"
+gfx_device_gl = "0.14.1"
+glutin = "0.8.1"
+
 clippy = {version="*", optional=true}
 
 [features]
