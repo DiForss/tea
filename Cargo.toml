@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["zovt <zovt@posteo.de>"]
 
 [dependencies]
+freetype = "0.2.0"
+harfbuzz-sys = "0.1.11"
 clippy = {version="*", optional=true}
 
 [features]
