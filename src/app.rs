@@ -1,3 +1,3 @@
-pub fn run() {
-	println!("Hello, world");
-}
+use ui::window;
+
+pub fn run() { window::main() }
