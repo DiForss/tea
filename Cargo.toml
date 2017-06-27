@@ -6,9 +6,5 @@ authors = ["zovt <zovt@posteo.de>"]
 [dependencies]
 clippy = {version="*", optional=true}
 
-[dependencies.gtk]
-version = "0.1.3"
-features = ["v3_10"]
-
 [features]
 default = ["clippy"]

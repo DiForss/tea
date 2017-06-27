@@ -1,5 +1,3 @@
-extern crate gtk;
-
 mod app;
 
 use app::run;
