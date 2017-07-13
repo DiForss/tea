@@ -5,6 +5,9 @@ TODO CI Badges
 # The Tea Text Editor
 Tea aims to be an extensible, fast, modern text editor.
 
+Also, more information can be found at
+[https://hack.withtea.party](hack.withtea.party).
+
 ## Features
 - Efficient, modal- and mode-based text editing
 - Define-your-own text objects
