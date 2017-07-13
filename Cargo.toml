@@ -15,4 +15,4 @@ glutin = "0.8.1"
 clippy = {version="*", optional=true}
 
 [features]
-default = ["clippy"]
+default = []
