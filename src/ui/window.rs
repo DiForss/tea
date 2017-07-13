@@ -2,6 +2,7 @@ use gfx;
 use glutin;
 use gfx_window_glutin;
 use gfx::Device;
+use gfx::traits::FactoryExt;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
@@ -12,7 +13,7 @@ gfx_defines!{
 		color: [f32; 3] = "a_Color",
 	}
 
-	pipeline Pipe {
+	pipeline pipe {
 		vbuf: gfx::VertexBuffer<Vertex> = (),
 		out: gfx::RenderTarget<ColorFormat> = "Target",
 	}
@@ -30,9 +31,9 @@ pub fn main() {
 		gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, &ev_loop);
 
 	let pso = factory.create_pipeline_simple(
-		include_bytes!("TODO"),
-		include_bytes!("TODO"),
-		Pipe::new()
+		include_bytes!("shaders/basic.glslv"),
+		include_bytes!("shaders/basic.glslf"),
+		pipe::new(),
 	).unwrap();
 
 	ev_loop.run_forever(|ev| {
