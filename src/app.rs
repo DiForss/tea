@@ -1,3 +1,7 @@
+use ui::text;
 use ui::window;
 
-pub fn run() { window::main() }
+pub fn run() {
+	text::basic();
+	window::main();
+}
