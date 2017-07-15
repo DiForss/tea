@@ -18,7 +18,7 @@ pub fn basic() {
 	let f_size: i64 = 50;
 
 	let mut faces: [FT_Face; 1] = [ptr::null_mut()];
-	let path = CString::new("src/ui/fonts/Lato-Regular.ttf").unwrap();
+	let path = CString::new("src/ui/fonts/Monoid-Regular.ttf").unwrap();
 
 	unsafe {
 		assert!(
@@ -40,7 +40,8 @@ pub fn basic() {
 	let buf = unsafe { hb_buffer_create() };
 
 	let lang = CString::new("en").unwrap();
-	let text = CString::new("Hello, world! ffi ffff ii gh ij ft").unwrap();
+	let text = CString::new("Hello, world! ffi ffff ii gh ij ft ==> =>")
+		.unwrap();
 	let text_ptr = text.into_raw();
 
 	let mut glyph_count: u32 = 0;
