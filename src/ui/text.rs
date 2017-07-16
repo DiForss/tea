@@ -62,10 +62,11 @@ pub fn basic() {
 
 	println!("{}", glyph_count);
 
-	let mut str_width_px = 0;
+	let mut str_width_px: f32 = 0.0;
 	for i in 0..glyph_count {
-		str_width_px += unsafe { *glyph_positions.offset(i as isize) }.x_advance / 64;
+		str_width_px += unsafe { *glyph_positions.offset(i as isize) }.x_advance as f32 / 64.0;
 	}
+	str_width_px = str_width_px.ceil();
 
 	println!("{}", str_width_px);
 
