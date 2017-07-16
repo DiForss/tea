@@ -1,7 +1,5 @@
 use freetype::freetype::*;
 use harfbuzz_sys::*;
-use harfbuzz_sys::hb_direction_t::*;
-use harfbuzz_sys::hb_script_t::*;
 
 use std::ffi::CString;
 use std::ptr;
