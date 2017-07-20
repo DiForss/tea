@@ -1,24 +1,5 @@
-use gfx;
-use gfx::Device;
-use gfx::traits::FactoryExt;
-use gfx_window_glutin;
-use glutin;
 
-pub type ColorFormat = gfx::format::Rgba8;
-pub type DepthFormat = gfx::format::DepthStencil;
-
-gfx_defines!{
-	vertex Vertex {
-		pos: [f32; 4] = "a_Pos",
-		color: [f32; 3] = "a_Color",
-	}
-
-	pipeline pipe {
-		vbuf: gfx::VertexBuffer<Vertex> = (),
-		out: gfx::RenderTarget<ColorFormat> = "Target",
-	}
-}
-
+/*
 pub fn main() {
 	let builder = glutin::WindowBuilder::new()
 		.with_title("Tea".to_string())
@@ -75,3 +56,4 @@ pub fn main() {
 		device.cleanup();
 	})
 }
+*/
