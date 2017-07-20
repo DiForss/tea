@@ -161,7 +161,9 @@ pub fn render_text_to_glyphs_buf(text: Text,
 		                    width: bitmap.width,
 		                    height: bitmap.rows,
 		                    bearing_x: unsafe { *slot }.bitmap_left,
-		                    bearing_y: unsafe { *slot }.bitmap_top, };
+		                    bearing_y: unsafe { *slot }.bitmap_top,
+		                    advance_x: pos.x_advance,
+		                    advance_y: pos.y_advance, };
 
 		glyphs.push(glyph);
 	}
