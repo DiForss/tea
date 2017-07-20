@@ -40,7 +40,7 @@ pub struct Quad<V> {
 
 impl<V> Quad<V>
 where
-	V: From<(f32, f32)> + Into<(f32, f32)>, {
+	V: From<(f32, f32)> + Into<(f32, f32)> + Copy, {
 	pub fn new(w: f32, h: f32) -> Self {
 		let (adj_w, adj_h, scale) = if w > h {
 			(1.0, h / w, w)
@@ -60,4 +60,9 @@ where
 
 	pub fn width(&self) -> f32 { self.vertices[3].into().0 * self.scale }
 	pub fn height(&self) -> f32 { self.vertices[1].into().1 * self.scale }
+
+	// Return an EBO laid out like:
+	// T1: TL BL TR
+	// T2: BL TR BR
+	pub fn ebo(&self) -> [i8; 6] { [0, 1, 3, 1, 2, 3] }
 }
