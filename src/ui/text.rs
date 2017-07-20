@@ -134,10 +134,6 @@ pub fn render_text_to_glyphs_buf(text: Text,
 	}
 
 	let mut glyphs: Vec<Glyph> = Vec::with_capacity(glyph_count as usize);
-	let mut min_x = std::i32::MAX;
-	let mut min_y = std::i32::MAX;
-	let mut max_x = std::i32::MIN;
-	let mut max_y = std::i32::MIN;
 
 	for i in 0..glyph_count {
 		unsafe {
@@ -170,5 +166,3 @@ pub fn render_text_to_glyphs_buf(text: Text,
 
 	Ok(glyphs)
 }
-
-fn render_glyph(lib: FT_Library) {}
