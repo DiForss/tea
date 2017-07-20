@@ -1,24 +1,26 @@
 use freetype::freetype::*;
 use harfbuzz_sys::*;
 
+use std;
 use std::borrow::Cow;
+use std::cmp::{max, min};
 use std::collections::HashMap;
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 use std::path::Path;
 use std::ptr;
 use std::slice::from_raw_parts;
 
-pub fn with_new_freetype<A, F: Fn(*mut FT_Library) -> A>(f: F) -> Result<A, FT_Error> {
-	let lib = ptr::null_mut();
+pub fn with_new_freetype<A, F: Fn(FT_Library) -> A>(f: F) -> Result<A, FT_Error> {
+	let mut lib: FT_Library = ptr::null_mut();
 
-	let err = unsafe { FT_Init_FreeType(lib) };
+	let err = unsafe { FT_Init_FreeType(&mut lib) };
 	if !err.succeeded() {
 		return Err(err);
 	};
 
 	let out = f(lib);
 
-	let err = unsafe { FT_Done_FreeType(*lib) };
+	let err = unsafe { FT_Done_FreeType(lib) };
 	if !err.succeeded() {
 		return Err(err);
 	};
@@ -26,19 +28,22 @@ pub fn with_new_freetype<A, F: Fn(*mut FT_Library) -> A>(f: F) -> Result<A, FT_E
 	Ok(out)
 }
 
+#[derive(Debug)]
 pub struct Glyph {
 	buf: Box<[u8]>,
 	width: u32,
 	height: u32,
 	bearing_x: i32,
 	bearing_y: i32,
+	advance_x: i32,
+	advance_y: i32,
 }
 
 pub struct Text {
-	string: String,
-	direction: hb_direction_t,
-	script: hb_script_t,
-	language: hb_language_t,
+	pub string: String,
+	pub direction: hb_direction_t,
+	pub script: hb_script_t,
+	pub language: hb_language_t,
 }
 
 pub struct Font {
@@ -47,19 +52,23 @@ pub struct Font {
 }
 
 impl Font {
-	pub fn new(path: &Path, lib: FT_Library) -> Self {
-		let path_str = path.to_string_lossy();
-
-		let c_path = unsafe { CStr::from_bytes_with_nul_unchecked(path_str.as_bytes()) };
+	pub fn new(lib: FT_Library, path: &Path) -> Self {
+		let path_str = CString::new(path.to_str().unwrap()).unwrap();
 
 		let mut ft_face: FT_Face = ptr::null_mut();
 		unsafe {
-			FT_New_Face(lib, c_path.as_ptr(), 0, &mut ft_face);
+			FT_New_Face(lib, path_str.as_ptr(), 0, &mut ft_face);
 		}
 
 		let hb_font = unsafe { hb_ft_font_create_referenced(ft_face) };
 
 		Font { ft_face, hb_font }
+	}
+
+	pub fn set_pixel_size(&mut self, px_size: u32) {
+		unsafe {
+			FT_Set_Pixel_Sizes(self.ft_face, 0, px_size);
+		}
 	}
 
 	pub fn get_name(&self) -> Cow<str> {
@@ -79,10 +88,10 @@ pub type FontLibrary = HashMap<String, Font>;
 
 // Render text to a bitmap, that can be used as a texture for an
 // OpenGL quad
-pub fn render_text_to_bitmap(lib: FT_Library, t: Text, font: Font) -> Result<(), FT_Error> {
+pub fn render_text_to_glyphs(t: Text, font: Font) -> Result<Vec<Glyph>, FT_Error> {
 	let buf = unsafe { hb_buffer_create() };
 
-	let r = render_text_to_bitmap_buf(t, font, buf);
+	let r = render_text_to_glyphs_buf(t, font, buf);
 
 	unsafe { hb_buffer_destroy(buf) };
 
@@ -90,10 +99,10 @@ pub fn render_text_to_bitmap(lib: FT_Library, t: Text, font: Font) -> Result<(),
 }
 
 // Like render_text_to_bitmap, but you can reuse a buffer
-pub fn render_text_to_bitmap_buf(text: Text,
+pub fn render_text_to_glyphs_buf(text: Text,
                                  font: Font,
                                  buf: *mut hb_buffer_t)
-    -> Result<(), FT_Error> {
+    -> Result<Vec<Glyph>, FT_Error> {
 	unsafe {
 		hb_buffer_reset(buf);
 		hb_buffer_set_direction(buf, text.direction);
@@ -124,9 +133,11 @@ pub fn render_text_to_bitmap_buf(text: Text,
 		glyph_pos = hb_buffer_get_glyph_positions(buf, &mut glyph_count);
 	}
 
-	let mut glyphs: Vec<Glyph> = Vec::new();
-	let total_bitmap_height = 0;
-	let total_bitmap_width = 0;
+	let mut glyphs: Vec<Glyph> = Vec::with_capacity(glyph_count as usize);
+	let mut min_x = std::i32::MAX;
+	let mut min_y = std::i32::MAX;
+	let mut max_x = std::i32::MIN;
+	let mut max_y = std::i32::MIN;
 
 	for i in 0..glyph_count {
 		unsafe {
@@ -144,17 +155,18 @@ pub fn render_text_to_bitmap_buf(text: Text,
 		let size = bitmap.rows * bitmap.width;
 		let bitmap_buf_slice = unsafe { from_raw_parts(bitmap.buffer, size as usize) };
 
-		glyphs
-			.push(Glyph { buf: bitmap_buf_slice.to_owned().into_boxed_slice(),
-			              width: bitmap.width,
-			              height: bitmap.rows,
-			              bearing_x: unsafe { *slot }.bitmap_left,
-			              bearing_y: unsafe { *slot }.bitmap_top, });
+		let pos = unsafe { (*glyph_pos.offset(i as isize)) };
+
+		let glyph = Glyph { buf: bitmap_buf_slice.to_owned().into_boxed_slice(),
+		                    width: bitmap.width,
+		                    height: bitmap.rows,
+		                    bearing_x: unsafe { *slot }.bitmap_left,
+		                    bearing_y: unsafe { *slot }.bitmap_top, };
+
+		glyphs.push(glyph);
 	}
 
-	// FIXME: Finish this function
-
-	Ok(())
+	Ok(glyphs)
 }
 
 fn render_glyph(lib: FT_Library) {}
