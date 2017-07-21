@@ -1,7 +1,9 @@
 use gfx;
 use gfx::Device;
 use gfx::traits::FactoryExt;
+
 use gfx_window_glutin;
+
 use glutin;
 
 use std::borrow::Borrow;
@@ -72,17 +74,19 @@ where
 	pub fn ebo(&self) -> [i8; 6] { [0, 1, 3, 1, 2, 3] }
 }
 
-pub fn texture_from_glyph<R, F>(factory: &mut F,
-                                glyph: Glyph)
+pub fn texture_from_data<R, F>(factory: &mut F,
+                               buf: &[u8],
+                               width: u16,
+                               height: u16)
     -> gfx::handle::ShaderResourceView<R, [f32; 4]>
 where
 	R: gfx::Resources,
 	F: gfx::Factory<R>, {
 	use gfx::texture as t;
 
-	let kind = t::Kind::D2(glyph.width, glyph.height, t::AaMode::Single);
+	let kind = t::Kind::D2(width, height, t::AaMode::Single);
 	let (_, view) = factory
-		.create_texture_immutable_u8::<gfx::format::Rgba8>(kind, &[glyph.buf.borrow()])
+		.create_texture_immutable_u8::<gfx::format::Rgba8>(kind, &[buf])
 		.unwrap();
 
 	view
